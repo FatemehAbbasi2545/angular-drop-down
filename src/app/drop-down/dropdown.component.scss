@@ -1,7 +1,8 @@
+
 .container {
     width: 14rem;
+    display: flex;
     display: inline-flex;
-    cursor: pointer;
     position: relative;
     user-select: none;
     box-sizing: border-box;
@@ -13,3 +14,112 @@
     font-size: 1rem;
     font-weight: normal;
 }
+
+.input-text {
+    border: 0 none;
+    display: block;
+    background: transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    flex: 1 1 auto;
+    width: 80%;
+    text-overflow: ellipsis;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 1rem;
+    color: #495057;
+    padding: 0.75rem 0.75rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    border-radius: 6px;
+}
+
+.dropdown-trigger {
+    background: transparent;
+    color: #6c757d;
+    width: 3rem;
+    cursor: pointer;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+
+
+
+
+
+.bg-\[\#1F2A37\] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(31 42 55 / var(--tw-bg-opacity));
+}
+
+.absolute {
+    position: absolute;
+}
+
+.top-0 {
+    top: 0;
+}
+
+.left-0 {
+    left: 0;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.opacity-0 {
+    opacity: 1;
+}
+
+.rounded-lg {
+    border-radius: .5rem;
+}
+
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+    transition-duration: .15s;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.text-sm {
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+
+
+

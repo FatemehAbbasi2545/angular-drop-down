@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { DropDownBase } from './dropdown.base';
 
 @Component({
   selector: 'dropdown',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   providers: [
@@ -18,4 +19,7 @@ import { DropDownBase } from './dropdown.base';
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
 export class DropDownComponent extends DropDownBase {
+
+  @ViewChild('container') containerElementRef!: ElementRef;
+  @ViewChild('inputText') inputTextElementRef!: ElementRef;
 }
