@@ -17,34 +17,35 @@ export class DropDownBase implements ControlValueAccessor {
     this._items = value;
   }
       
-  @Output() onValueChange: EventEmitter<string> = new EventEmitter();
-    
-  
-  get value(): string {
+  @Output() onValueChange: EventEmitter<number | string> = new EventEmitter();
+      
+  get value(): number | string {
     return this._value;
   }
   
-  set value(value: string) {
+  set value(value: number | string) {
     this._value = value;
   }
 
   
-  private _value: string = '';
+  private _value: number | string = '';
   private _items: Array<ItemsDataModel> | Array<object> = [];
 
-  constructor(public changeDetector: ChangeDetectorRef) {}
+  constructor(public changeDetector: ChangeDetectorRef) {
+    const cd = 200;
+  }
 
   onTouche: Function = () => {};
-  onChange: Function = (_: string) => {};
+  onChange: Function = (_: number | string) => {};
 
-  writeValue(value: string): void {
+  writeValue(value: number | string): void {
     if (value !== undefined && this.value !== value) {
       this.value = value;
     }
     this.changeDetector.markForCheck();
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (value: number | string) => void): void {
       this.onChange = fn;
   }
 
@@ -57,7 +58,7 @@ export class DropDownBase implements ControlValueAccessor {
       this.changeDetector.markForCheck();
   }
 
-  onModelChange(value: any) {
+  onModelChange(value: number | string) {
     this.onChange(value);
     this.onTouche(value);
     this.onValueChange.emit(value);
