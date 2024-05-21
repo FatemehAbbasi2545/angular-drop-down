@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropDownBase } from './dropdown.base';
+import { ItemsDataModel } from './dropdown.interface';
 
 @Component({
   selector: 'dropdown',
