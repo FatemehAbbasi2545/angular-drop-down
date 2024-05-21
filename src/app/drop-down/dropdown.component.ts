@@ -21,5 +21,29 @@ import { DropDownBase } from './dropdown.base';
 export class DropDownComponent extends DropDownBase {
 
   @ViewChild('container') containerElementRef!: ElementRef;
-  @ViewChild('inputText') inputTextElementRef!: ElementRef;
+  @ViewChild('input') inputElementRef!: ElementRef;
+  @ViewChild('overlay') overlayElementRef!: ElementRef;
+
+  overlayVisible = false;
+
+  onTriggerClick(event: MouseEvent) {
+    if (this.disabled) return;
+    if (this.overlayVisible) {
+      this.hide();
+      return;
+    }
+    this.show();
+  }
+
+  show() {
+    if (this.overlayVisible || this.disabled) return;
+    this.overlayVisible = true;
+  }
+
+  hide() {
+    if (!this.overlayVisible || this.disabled) return;
+    this.overlayVisible = false;
+    this.changeDetector.markForCheck();  
+    this.onTouche();
+  }
 }
