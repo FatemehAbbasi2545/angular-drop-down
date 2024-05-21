@@ -15,7 +15,14 @@
 
     <div #overlay *ngIf="overlayVisible" class="overlay font-family">
         <div class="dropdown-panel">
-            <div class="dropdown-items-wrapper">                              
+            <div class="dropdown-items-wrapper">
+                <ng-container *ngIf="dataItems && dataItems | async as items">
+                    <ul role="listbox">
+                        <li *ngFor="let item of items; let i = index" class="dropdown-item">
+                            <span>{{ item.Value }}</span>
+                        </li>
+                    </ul>
+                </ng-container>               
             </div>
         </div>
     </div>

@@ -2,19 +2,18 @@
 import { ChangeDetectorRef, Directive, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { ItemsDataModel } from './dropdown.interface';
+import { Observable } from 'rxjs';
 
 @Directive({})
 export class DropDownBase implements ControlValueAccessor {
-  @Input() keyFieldName = 'Key';
-  @Input() valueFieldName = 'Value';
-  @Input() disabled = false;
+  @Input() disabled: boolean = false;
   
-  @Input() get items(): Array<ItemsDataModel> | Array<object> {
-    return this._items;
+  @Input() get dataItems(): Observable<Array<ItemsDataModel>> {
+    return this._dataItems$;
   }
   
-  set items(value: Array<ItemsDataModel> | Array<object>) {
-    this._items = value;
+  set dataItems(value: Observable<Array<ItemsDataModel>>) {
+    this._dataItems$ = value;
   }
       
   @Output() onValueChange: EventEmitter<number | string> = new EventEmitter();
@@ -29,7 +28,7 @@ export class DropDownBase implements ControlValueAccessor {
 
   
   private _value: number | string = '';
-  private _items: Array<ItemsDataModel> | Array<object> = [];
+  private _dataItems$: Observable<Array<ItemsDataModel>> = new Observable;
 
   constructor(public changeDetector: ChangeDetectorRef) {
     const cd = 200;
@@ -60,7 +59,7 @@ export class DropDownBase implements ControlValueAccessor {
 
   onModelChange(value: number | string) {
     this.onChange(value);
-    this.onTouche(value);
+    this.onTouche();
     this.onValueChange.emit(value);
   }
 }
