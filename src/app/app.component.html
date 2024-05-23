@@ -1,5 +1,12 @@
 <h1 class="header">Angular Drop Down</h1>
 <div class="flex">
     <span><label>job:</label></span>
-    <dropdown [dataList]="dataProvider.jobData$"></dropdown>
+    <dropdown name="job"
+              [(ngModel)]="jobKey" 
+              [dataList]="dataProvider.jobData$"
+              (onModelChange)="onJobChange($event)"></dropdown>
+</div>
+
+<div class="margin-top-1">
+    <span>Job title is: {{ jobTitle }}</span>
 </div>

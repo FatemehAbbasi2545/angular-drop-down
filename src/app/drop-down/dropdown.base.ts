@@ -1,7 +1,7 @@
 
 import { ChangeDetectorRef, Directive, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { ListItemModel } from './dropdown.interface';
+import { DropdownOutputModel, ListItemModel } from './dropdown.interface';
 import { Observable } from 'rxjs';
 
 @Directive({})
@@ -18,7 +18,7 @@ export class DropDownBase implements ControlValueAccessor {
     this._dataList$ = value;
   }
       
-  @Output() onModelChange: EventEmitter<number | string> = new EventEmitter();
+  @Output() onModelChange: EventEmitter<DropdownOutputModel> = new EventEmitter();
 
   get value(): number | string {
     return this._value;
@@ -43,6 +43,7 @@ export class DropDownBase implements ControlValueAccessor {
   writeValue(value: number | string): void {
     if (value !== undefined && this.value !== value) {
       this.value = value;
+      this.ngAfterWriteValue();
     }
     this.changeDetector.markForCheck();
   }
@@ -63,8 +64,9 @@ export class DropDownBase implements ControlValueAccessor {
   updateModel(value: number | string): void {
     this.value = value;
     this.onChange(value);
-    this.onTouche();
-    this.onModelChange.emit(value);
+    this.onTouche();  
   }
+
+  ngAfterWriteValue(): void {}
 }
 
