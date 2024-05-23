@@ -46,5 +46,5 @@ export class DropDownComponent extends DropDownBase {
     this.overlayVisible = false;
     this.changeDetector.markForCheck();  
     this.onTouche();
-  }
+  }  
 }

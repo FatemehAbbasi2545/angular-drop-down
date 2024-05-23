@@ -18,9 +18,11 @@
             <div class="dropdown-items-wrapper">
                 <ng-container *ngIf="dataItems && dataItems | async as items">
                     <ul role="listbox">
-                        <li *ngFor="let item of items; let i = index" class="dropdown-item">
-                            <span>{{ item.Value }}</span>
-                        </li>
+                        <ng-container *ngFor="let item of items; let i = index">
+                            <li class="dropdown-item">
+                                <span>{{ item.Value }}</span>
+                            </li>
+                        </ng-container>                        
                     </ul>
                 </ng-container>               
             </div>

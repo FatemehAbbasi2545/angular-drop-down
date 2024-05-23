@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DropDownComponent } from './drop-down/dropdown.component';
 import { DataProviderService } from './data-provider.service';
@@ -8,7 +8,8 @@ import { DataProviderService } from './data-provider.service';
   standalone: true,
   imports: [RouterOutlet, DropDownComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
   title = 'angular-drop-down';
