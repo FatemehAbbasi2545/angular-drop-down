@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropDownBase } from './dropdown.base';
-import { ItemsDataModel } from './dropdown.interface';
+import { ListItemModel } from './dropdown.interface';
+import { ObjectUtil } from '../utils/object.util';
 
 @Component({
   selector: 'dropdown',
@@ -20,12 +21,13 @@ import { ItemsDataModel } from './dropdown.interface';
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
 export class DropDownComponent extends DropDownBase {
+  displayValue = '';
+  overlayVisible = false;  
+  //focusedOptionIndex = signal<number>(-1);
 
-  @ViewChild('container') containerElementRef!: ElementRef;
-  @ViewChild('input') inputElementRef!: ElementRef;
-  @ViewChild('overlay') overlayElementRef!: ElementRef;
-
-  overlayVisible = false;
+  getOptionDisplayValue(option: ListItemModel) {    
+    return ObjectUtil.accessPropertyValue(option, this.displayPropertyName);    
+  }
 
   onTriggerClick(event: MouseEvent) {
     if (this.disabled) return;
@@ -34,17 +36,53 @@ export class DropDownComponent extends DropDownBase {
       return;
     }
     this.show();
+  }  
+  
+  onOptionSelect(option: ListItemModel): void {
+    if (!this.isSelected(option)) {
+      const value = this.getOptionValue(option);
+      if (value != null) {
+        this.updateModel(value);
+        this.updateDisplayValue(option);
+        //this.focusedOptionIndex.set(this.findSelectedOptionIndex());
+      }                
+    }
+    this.hide();
   }
 
-  show() {
+  private show(): void {
     if (this.overlayVisible || this.disabled) return;
     this.overlayVisible = true;
   }
 
-  hide() {
+  private hide(): void {
     if (!this.overlayVisible || this.disabled) return;
     this.overlayVisible = false;
     this.changeDetector.markForCheck();  
     this.onTouche();
-  }  
+  }
+
+  private isSelected(option: ListItemModel) {
+    return this.isValidOption(option) && this.isOptionValueEqualsModelValue(option);
+  }
+
+  private isValidOption(option: ListItemModel) {
+    return option !== undefined && option !== null;
+  }
+
+  private isValidSelectedOption(option: ListItemModel) {
+    return this.isValidOption(option) && this.isSelected(option);
+  }
+
+  private isOptionValueEqualsModelValue(option: ListItemModel) {
+    return ObjectUtil.equals(this.selectedItem, option, this.keyPropertyName);
+  }
+
+  private getOptionValue(option: ListItemModel) {    
+    return ObjectUtil.accessPropertyValue(option, this.keyPropertyName);    
+  }
+
+  private updateDisplayValue(option: ListItemModel) {    
+    this.displayValue = this.getOptionDisplayValue(option);
+  }
 }
