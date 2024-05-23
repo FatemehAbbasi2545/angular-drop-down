@@ -1,7 +1,7 @@
-<div #container class="container font-family transition">
-    <input #input
-           type="text" 
+<div class="container font-family transition">
+    <input type="text" 
            *ngIf="!disabled"
+           [value]="displayValue"
            class="input-text font-family transition"
            [disabled]="disabled"
            />
@@ -13,14 +13,14 @@
         </svg>
     </div> 
 
-    <div #overlay *ngIf="overlayVisible" class="overlay font-family">
+    <div *ngIf="overlayVisible" class="overlay font-family">
         <div class="dropdown-panel">
             <div class="dropdown-items-wrapper">
-                <ng-container *ngIf="dataItems && dataItems | async as items">
+                <ng-container *ngIf="dataList && dataList | async as options">
                     <ul role="listbox">
-                        <ng-container *ngFor="let item of items; let i = index">
-                            <li class="dropdown-item">
-                                <span>{{ item.Value }}</span>
+                        <ng-container *ngFor="let option of options; let i = index">
+                            <li class="dropdown-item" (click)="onOptionSelect(option)">
+                                <span>{{ getOptionDisplayValue(option) }}</span>
                             </li>
                         </ng-container>                        
                     </ul>

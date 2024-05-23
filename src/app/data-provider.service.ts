@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { ItemsDataModel } from './drop-down/dropdown.interface';
+import { ListItemModel } from './drop-down/dropdown.interface';
 import { Observable, of } from 'rxjs';
 import { jobMockData } from './mock-data';
 
@@ -7,7 +7,7 @@ import { jobMockData } from './mock-data';
   providedIn: 'root'
 })
 export class DataProviderService {  
-  jobData$: Observable<Array<ItemsDataModel>> = of(jobMockData);
+  jobData$: Observable<Array<ListItemModel>> = of(jobMockData);
 
   constructor() {}  
 }

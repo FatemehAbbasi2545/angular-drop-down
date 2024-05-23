@@ -1,5 +1,5 @@
 
-export interface ItemsDataModel {
-    Key: number;
-    Value: string;
+export interface ListItemModel {
+    Key: number | string;
+    Value: number | string;
 }

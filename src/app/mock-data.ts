@@ -1,6 +1,6 @@
-import { ItemsDataModel } from "./drop-down/dropdown.interface";
+import { ListItemModel } from "./drop-down/dropdown.interface";
 
-export const jobMockData: ItemsDataModel[] = [
+export const jobMockData: ListItemModel[] = [
   { Key: 1, Value: "Administrative Assistant" },
   { Key: 2, Value: "Marketing Manager" },
   { Key: 3, Value: "Customer Service Representative" },
