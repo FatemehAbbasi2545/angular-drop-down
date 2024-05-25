@@ -20,27 +20,27 @@ export class DropDownBase implements ControlValueAccessor {
       
   @Output() onModelChange: EventEmitter<DropdownOutputModel> = new EventEmitter();
 
-  get value(): number | string {
+  get value(): number | string | null {
     return this._value;
   }
   
-  set value(value: number | string) {
+  set value(value: number | string | null) {
     this._value = value;
   }
 
-  private _value: number | string = '';
+  private _value: number | string | null = '';
   private _dataList$: Observable<Array<ListItemModel>> = new Observable;
 
-  selectedItem: ListItemModel = {} as ListItemModel;  
+  selectedItem: ListItemModel | null = null;
 
   constructor(public changeDetector: ChangeDetectorRef) {
     const cd = 200;
   }
 
   onTouche: Function = () => {};
-  onChange: Function = (_: number | string) => {};
+  onChange: Function = (_: number | string | null) => {};
 
-  writeValue(value: number | string): void {
+  writeValue(value: number | string | null): void {
     if (value !== undefined && this.value !== value) {
       this.value = value;
       this.ngAfterWriteValue();
@@ -48,7 +48,7 @@ export class DropDownBase implements ControlValueAccessor {
     this.changeDetector.markForCheck();
   }
 
-  registerOnChange(fn: (value: number | string) => void): void {
+  registerOnChange(fn: (value: number | string | null) => void): void {
       this.onChange = fn;
   }
 
@@ -61,10 +61,10 @@ export class DropDownBase implements ControlValueAccessor {
       this.changeDetector.markForCheck();
   }
 
-  updateModel(value: number | string): void {
+  updateModel(value: number | string | null): void {
     this.value = value;
     this.onChange(value);
-    this.onTouche();  
+    this.onTouche();
   }
 
   ngAfterWriteValue(): void {}
