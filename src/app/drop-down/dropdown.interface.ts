@@ -5,8 +5,8 @@ export interface ListItemModel {
 }
 
 export interface DropdownOutputModel {
-    key: number | string;
-    title: number | string;
-    item: ListItemModel;
+    key: number | string | null;
+    title: number | string | null;
+    item: ListItemModel | null;
 }
 
