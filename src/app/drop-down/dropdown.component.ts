@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild, forwardRef, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild, forwardRef, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropDownBase } from './dropdown.base';
 import { DropdownOutputModel, ListItemModel } from './dropdown.interface';
-import { ObjectUtil } from '../utils/object.util';
+import { ObjectUtil } from './../utils/object.util';
+import { DomUtil } from './../utils/dom.util';
 
 @Component({
   selector: 'dropdown',
@@ -20,36 +21,63 @@ import { ObjectUtil } from '../utils/object.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
-export class DropDownComponent extends DropDownBase {
-  displayValue: number | string | null = '';
-  overlayVisible = false;
+export class DropDownComponent extends DropDownBase implements AfterViewChecked {
+  @ViewChild('input') inputElementRef!: ElementRef;
+  @ViewChild('listItems') listItemsElementRef!: ElementRef;
 
-  @ViewChild('overlay') overlayElementRef!: ElementRef;
+  overlayVisible = false;
+  displayValue: number | string | null = '';
+  focusedOptionId : number | string | null = null;
+  
+  get selectedItem() {
+    return this._selectedItem;
+  }
+  
+  set selectedItem(value: ListItemModel | null) {
+    this._selectedItem = value;
+    if (value) {
+      const optionValue = this.getOptionValue(value);
+      this.focusedOptionId = `${optionValue}` || null;
+    } else {
+      this.focusedOptionId = null;
+    }
+  }
+
+  _selectedItem: ListItemModel | null = null;
+  
+  ngAfterViewChecked(): void {
+    this.scrollInView();          
+  }  
 
   override ngAfterWriteValue(): void {
     if (this.value) {
       this.setSelectedItem();
       this.updateDisplayValue();
     }
-  }
-
-  getOptionDisplayValue(option: ListItemModel | null): number | string | null {    
-    return ObjectUtil.accessPropertyValue(option, this.displayPropertyName);    
-  }
+  }  
 
   setSelectedItem(option?: ListItemModel): void {
     if (option) {
-      this.selectedItem = option;
+      this.selectedItem = option;      
       return;
     }
 
     if (this.value) {      
       this.dataList.subscribe((items: Array<ListItemModel>) => {
         this.selectedItem = items.find((x) => {
-          return x[this.keyPropertyName as keyof typeof x ] === this.value;
+          return x[this.keyPropertyName as keyof typeof x] === this.value;
         }) || null;
       })    
     }
+  }
+
+  getOptionId(option: ListItemModel, index: number = -1): string {
+    const value = this.getOptionValue(option);
+    return value == null ? `option_${index}` : `${value}`;
+  }
+
+  getOptionDisplayValue(option: ListItemModel | null): number | string | null {   
+    return ObjectUtil.accessPropertyValue(option, this.displayPropertyName);    
   }
 
   onTriggerClick(event: MouseEvent): void {
@@ -68,7 +96,9 @@ export class DropDownComponent extends DropDownBase {
       if (value != null) {
         this.updateModel(value); 
         this.updateDisplayValue(option);
-        this.onModelChangeEmit();
+        this.onModelChange.emit(
+          { key: this.value, title: this.displayValue, item: this.selectedItem } as DropdownOutputModel
+        );
       }                
     }
     this.hide();
@@ -104,15 +134,14 @@ export class DropDownComponent extends DropDownBase {
     if (this.disabled) return;
 
     if (event.code === 'Delete') {
-      this.onDeleteKey(event);
-      event.preventDefault();
-      event.stopPropagation();
-    }    
+      this.onDeleteKey(event);     
+    }   
   }
 
   private show(): void {
     if (this.overlayVisible || this.disabled) return;
     this.overlayVisible = true;
+    this.inputElementRef?.nativeElement.focus();
   }
 
   private hide(): void {
@@ -130,26 +159,16 @@ export class DropDownComponent extends DropDownBase {
     return option !== undefined && option !== null;
   }
 
-  private isValidSelectedOption(option: ListItemModel): boolean {
-    return this.isValidOption(option) && this.isSelected(option);
-  }
-
   private isOptionValueEqualsModelValue(option: ListItemModel):boolean {
     return ObjectUtil.equals(this.selectedItem, option, this.keyPropertyName);
   }
 
   private getOptionValue(option: ListItemModel): number | string | null {    
-    return ObjectUtil.accessPropertyValue(option, this.keyPropertyName);    
+    return ObjectUtil.accessPropertyValue(option, this.keyPropertyName);   
   }
 
   private updateDisplayValue(option?: ListItemModel): void {   
     this.displayValue = this.getOptionDisplayValue(option || this.selectedItem);
-  }
-
-  private onModelChangeEmit() {
-    this.onModelChange.emit(
-      { key: this.value, title: this.displayValue, item: this.selectedItem } as DropdownOutputModel
-    );
   }
 
   private onEnterKey(event: KeyboardEvent): void {
@@ -188,16 +207,26 @@ export class DropDownComponent extends DropDownBase {
   }
 
   private onDeleteKey(event: KeyboardEvent) {
-    this.clear(event);
-    this.overlayVisible && this.hide();
+    this.clear();
+    this.overlayVisible && this.hide();        
     event.preventDefault();
     event.stopPropagation();
   }
 
-  private clear(event?: Event) {
+  private clear() {
     this.updateModel(null); 
     this.displayValue = null;
     this.selectedItem = null;
-    this.onModelChangeEmit();
+    this.onModelChange.emit(null);
   }
+
+  private scrollInView() {
+    if (!this.focusedOptionId) return;    
+    if (this.listItemsElementRef && this.listItemsElementRef.nativeElement) {
+      const element = DomUtil.findSingle(this.listItemsElementRef.nativeElement, `li[id="${this.focusedOptionId}"]`);
+      if (element) {        
+          element.scrollIntoView && element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+  }  
 }
