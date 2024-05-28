@@ -121,6 +121,29 @@ li {
     color: #1D4ED8;
 }
 
+.highlight {
+    color: #0d40ca;    
+}
+
+
+
+select {
+    margin: 0;
+    padding: 0;
+    display: block;   
+    position: relative;
+    list-style-type: none;
+    unicode-bidi: isolate;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    height: 15rem;
+}
+
+option {
+    display: flex;
+    text-align: -webkit-match-parent;
+    unicode-bidi: isolate;
+}
 
 
 .bg-\[\#1F2A37\] {

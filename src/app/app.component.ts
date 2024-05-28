@@ -21,8 +21,10 @@ export class AppComponent {
 
   constructor(public dataProvider: DataProviderService) {}
 
-  onJobChange(newValue: DropdownOutputModel): void {
-    this.jobKey =newValue.key as number;
-    this.jobTitle = newValue.title as string;
+  onJobChange(newValue: DropdownOutputModel | null): void {
+    if (newValue) {
+      this.jobKey = newValue.key as number;
+      this.jobTitle = newValue.title as string;
+    }    
   }
 }

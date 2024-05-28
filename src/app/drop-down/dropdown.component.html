@@ -1,7 +1,8 @@
 <div class="container font-family transition" (keydown)="onKeyDown($event)">
-    <input type="text" 
-           class="input-text font-family transition"   
-           (keydown)="onInputKeyDown($event)"        
+    <input #input
+           type="text" 
+           class="input-text font-family transition"     
+           (keydown)="onInputKeyDown($event)"               
            [value]="displayValue"
            [disabled]="disabled"
            />
@@ -13,17 +14,20 @@
         </svg>
     </div>
 
-    <div #overlay *ngIf="overlayVisible" class="overlay font-family">
+    <div *ngIf="overlayVisible" class="overlay font-family">
         <div class="dropdown-panel">
             <div class="dropdown-items-wrapper">
-                <ng-container *ngIf="dataList && dataList | async as options">
-                    <ul role="listbox">
-                        <ng-container *ngFor="let option of options; let i = index">
-                            <li class="dropdown-item" (click)="onOptionSelect(option)">
+                <ng-container *ngIf="dataList && dataList | async as options">                    
+                    <ul #listItems role="listbox">
+                        <ng-container *ngFor="let option of options; let i = index">                            
+                            <li class="dropdown-item" 
+                                [id]="getOptionId(option, i)"
+                                (click)="onOptionSelect(option)"
+                                [ngClass]="{ 'highlight': focusedOptionId === getOptionId(option, i) }">
                                 <span>{{ getOptionDisplayValue(option) }}</span>
                             </li>
                         </ng-container>                        
-                    </ul>
+                    </ul> 
                 </ng-container>               
             </div>
         </div>

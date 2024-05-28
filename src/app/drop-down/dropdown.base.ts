@@ -18,7 +18,7 @@ export class DropDownBase implements ControlValueAccessor {
     this._dataList$ = value;
   }
       
-  @Output() onModelChange: EventEmitter<DropdownOutputModel> = new EventEmitter();
+  @Output() onModelChange: EventEmitter<DropdownOutputModel | null> = new EventEmitter();
 
   get value(): number | string | null {
     return this._value;
@@ -29,13 +29,9 @@ export class DropDownBase implements ControlValueAccessor {
   }
 
   private _value: number | string | null = '';
-  private _dataList$: Observable<Array<ListItemModel>> = new Observable;
+  private _dataList$: Observable<Array<ListItemModel>> = new Observable;  
 
-  selectedItem: ListItemModel | null = null;
-
-  constructor(public changeDetector: ChangeDetectorRef) {
-    const cd = 200;
-  }
+  constructor(public changeDetector: ChangeDetectorRef) {}
 
   onTouche: Function = () => {};
   onChange: Function = (_: number | string | null) => {};
