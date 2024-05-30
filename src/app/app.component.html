@@ -1,12 +1,36 @@
 <h1 class="header">Angular Drop Down</h1>
-<div class="flex">
-    <span><label>job:</label></span>
-    <dropdown name="job"
-              [(ngModel)]="jobKey" 
-              [dataList]="dataProvider.jobData$"
-              (onModelChange)="onJobChange($event)"></dropdown>
-</div>
 
-<div class="margin-top-1">
-    <span>Job title is: {{ jobTitle }}</span>
-</div>
+<form>
+    <fieldset>
+      <legend>Template-driven Form:</legend>
+      <div class="flex margin-top-1">
+        <span><label>job:</label></span>
+        <dropdown name="job"
+                  [(ngModel)]="job" 
+                  [dataList]="dataProvider.jobData$"
+                  (onModelChange)="onJobChange($event)"></dropdown>
+    </div>
+    
+    <div class="margin-top-1 margin-bottom-1">
+        <span>Job title is: {{ jobTitle }}</span>
+    </div>
+    </fieldset>
+  </form>
+
+  <form class="margin-top-2">
+    <fieldset>
+      <legend>Reactive Form:</legend>
+      <div class="flex margin-top-1">
+        <span><label>Academic field:</label></span>
+        <dropdown [formControl]="academicField"
+                  [dataList]="dataProvider.AcademicFieldsData$"
+                  (onModelChange)="onAcademicFieldChange($event)"></dropdown>
+    </div>
+    
+    <div class="margin-top-1 margin-bottom-1">
+        <span>academic field title is: {{ academicFieldTitle }}</span>
+    </div>
+    </fieldset>
+  </form>
+
+
