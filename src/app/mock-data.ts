@@ -18,3 +18,19 @@ export const jobMockData: ListItemModel[] = [
   { Key: 15, Value: "Machine Operator" },
   { Key: 16, Value: "Order Selector" }
 ];
+
+export const AcademicFieldMockData: ListItemModel[] = [
+  { Key: 1001, Value: 'Psychology' },
+  { Key: 1002, Value: 'Biology' },
+  { Key: 1003, Value: 'Physics' },
+  { Key: 1004, Value: 'Medical Research History' },
+  { Key: 1005, Value: 'Anthropology' },
+  { Key: 1006, Value: 'Human Life Design' },
+  { Key: 1007, Value: 'Knowledge Management' },
+  { Key: 1008, Value: 'Security and Networks ' },
+  { Key: 1009, Value: 'Intelligent Robotics' },
+  { Key: 1010, Value: 'Entertainment Technology' },
+  { Key: 1011, Value: 'Energy and Environment' },
+  { Key: 1012, Value: 'Materials Chemistry' },
+  { Key: 1013, Value: 'Biotechnology' }
+];
