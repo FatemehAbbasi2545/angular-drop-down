@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DropDownBase } from './dropdown.base';
@@ -22,10 +22,18 @@ import { of } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
-export class DropDownComponent extends DropDownBase {
+export class DropDownComponent extends DropDownBase implements OnDestroy {
   @ViewChild('input') inputElementRef!: ElementRef;
   @ViewChild('searchText') searchTextElementRef!: ElementRef; 
   @ViewChild('listItems') listItemsElementRef!: ElementRef;
+
+  documentClickEventListener: Function | null = null;
+  documentKeyDownEventListener: Function | null = null;
+  
+  ngOnDestroy(): void {
+    this.unsubscribeDocumentClickEventListener();
+    this.unsubscribeDocumentKeyDownEventListener();
+  }
 
   override ngAfterWriteValue(): void {
     if (this.value) {
@@ -45,9 +53,11 @@ export class DropDownComponent extends DropDownBase {
       return;
     }
     this.show();
+    event.preventDefault();
+    event.stopPropagation();
   }
   
-  onOptionSelect(option: ListItemModel, index: number): void {
+  onOptionSelect(event: Event, option: ListItemModel, index: number): void {
     if (!this.isSelected(option)) {
       this.setSelectedItem(option);
       const value = this.getOptionValue(option);
@@ -60,7 +70,9 @@ export class DropDownComponent extends DropDownBase {
         );
       }                
     }
-    this.hide(); 
+    this.hide();     
+    event.preventDefault();
+    event.stopPropagation();
   } 
 
   onKeyDown(event: KeyboardEvent, pressedInInput = false): void {
@@ -133,7 +145,7 @@ export class DropDownComponent extends DropDownBase {
 
     if (option) {
       const index = this.visibleOptions.indexOf(option);
-      this.onOptionSelect(option, index);
+      this.onOptionSelect(event, option, index);
     }        
   }
 
@@ -154,7 +166,9 @@ export class DropDownComponent extends DropDownBase {
 
   private show(): void {
     if (this.overlayVisible || this.disabled) return;
-    this.overlayVisible = true;   
+    this.overlayVisible = true;      
+    this.subscribeDocumentClickEventListener();
+    this.subscribeDocumentKeyDownEventListener();
     this.inputElementRef?.nativeElement.focus(); 
     if (this.selectedItem) {
       this.focusedOptionIndex = this.visibleOptions.indexOf(this.selectedItem);
@@ -166,6 +180,8 @@ export class DropDownComponent extends DropDownBase {
     if (!this.overlayVisible || this.disabled) return;
     this.overlayVisible = false;
     this.focusedOptionIndex = -1;
+    this.unsubscribeDocumentClickEventListener();
+    this.unsubscribeDocumentKeyDownEventListener();
     this.changeDetector.markForCheck();  
     this.onTouche();
   }
@@ -201,7 +217,7 @@ export class DropDownComponent extends DropDownBase {
 
     if (this.overlayVisible && this.focusedOptionIndex !== -1) {   
       const option = this.visibleOptions[this.focusedOptionIndex];
-      this.onOptionSelect(option, this.focusedOptionIndex);    
+      this.onOptionSelect(event, option, this.focusedOptionIndex);    
     }
         
     event.preventDefault();
@@ -332,5 +348,41 @@ export class DropDownComponent extends DropDownBase {
           element.scrollIntoView && element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       }
     }
-  }  
+  }    
+
+  subscribeDocumentClickEventListener() {
+    if (this.documentClickEventListener) return;
+    this.documentClickEventListener = this.renderer.listen(
+      'document',
+      'click',
+      (event: MouseEvent) => {
+        this.overlayVisible && this.hide();
+      }
+    );
+  }
+
+  unsubscribeDocumentClickEventListener() {
+    if (!this.documentClickEventListener) return;
+
+    this.documentClickEventListener();
+    this.documentClickEventListener = null;
+  }
+
+  subscribeDocumentKeyDownEventListener() {
+    if (this.documentKeyDownEventListener) return;
+    this.documentKeyDownEventListener = this.renderer.listen(
+      'document',
+      'keydown',
+      (event: KeyboardEvent) => {
+        event.code === 'Escape' && this.overlayVisible && this.hide();
+      }
+    );
+  }
+
+  unsubscribeDocumentKeyDownEventListener() {
+    if (!this.documentKeyDownEventListener) return;
+
+    this.documentKeyDownEventListener();
+    this.documentKeyDownEventListener = null;
+  }
 }

@@ -40,7 +40,7 @@
                         <ng-container *ngFor="let option of options; let i = index">                            
                             <li class="dropdown-item"
                                 [id]="i"                                 
-                                (click)="onOptionSelect(option, i)"                                 
+                                (click)="onOptionSelect($event, option, i)"                                 
                                 [ngClass]="{ 'highlight': focusedOptionIndex === i }" >
                                 <span>{{ getOptionDisplayValue(option) }}</span>
                             </li>

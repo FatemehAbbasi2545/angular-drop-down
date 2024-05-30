@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Directive, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Directive, EventEmitter, Input, Output, Renderer2 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { DropdownOutputModel, ListItemModel } from './dropdown.interface';
 import { Observable, of } from 'rxjs';
@@ -61,7 +61,7 @@ export class DropDownBase implements ControlValueAccessor {
   filterValue: string = '';
   overlayVisible = false;
 
-  constructor(public changeDetector: ChangeDetectorRef) {}
+  constructor(public changeDetector: ChangeDetectorRef, public renderer: Renderer2) {}
 
   onTouche: Function = () => {};
   onChange: Function = (_: number | string | null) => {};
