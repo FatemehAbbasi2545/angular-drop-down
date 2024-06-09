@@ -1,9 +1,10 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DropDownComponent } from './drop-down/dropdown.component';
-import { DataProviderService } from './data-provider.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DropdownOutputModel } from './drop-down/dropdown.interface';
+
+import { DataProviderService } from './data-provider.service';
+import { DropDownComponent } from './ui/drop-down/dropdown.component';
+import { DropdownOutputModel } from './ui/model/ui.interface';
 
 @Component({
   selector: 'app-root',
