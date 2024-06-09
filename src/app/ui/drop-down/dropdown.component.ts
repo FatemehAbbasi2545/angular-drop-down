@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DropDownBase } from './dropdown.base';
-import { DropdownOutputModel, ListItemModel } from './dropdown.interface';
+import { Observable, of } from 'rxjs';
+
+import { UiComponent } from './../base/ui.component';
+import { DropdownOutputModel, ListItemModel } from './../model/ui.interface';
 import { ObjectUtil } from './../utils/object.util';
 import { DomUtil } from './../utils/dom.util';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'dropdown',
@@ -22,14 +23,57 @@ import { of } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
-export class DropDownComponent extends DropDownBase implements OnDestroy {
+export class DropDownComponent extends UiComponent implements OnDestroy {
+  @Input() keyPropertyName: string = 'Key';
+  @Input() displayPropertyName: string = 'Value';
+  
+  @Input() get dataList(): Observable<Array<ListItemModel>> {
+    return this._dataList$;
+  }
+  
+  set dataList(value: Observable<Array<ListItemModel>>) {
+    this._dataList$ = value;
+    value.subscribe((items: Array<ListItemModel>) => {
+      this.listItems = items;
+      this.visibleOptions = items;
+      if (items.length > 0) {
+        this.lastOptionIndex = items.length - 1;
+      }      
+      this.visibleOptions$ = of(items);
+      if (this.value) {
+        this.setSelectedItem();
+      }
+    }) 
+  }
+      
+  @Output() onModelChange: EventEmitter<DropdownOutputModel | null> = new EventEmitter();   
+  
   @ViewChild('input') inputElementRef!: ElementRef;
   @ViewChild('searchText') searchTextElementRef!: ElementRef; 
   @ViewChild('listItems') listItemsElementRef!: ElementRef;
 
+  get selectedItem() {
+    return this._selectedItem;
+  }
+  
+  set selectedItem(value: ListItemModel | null) {
+    this._selectedItem = value;
+  }
+  
+  listItems: Array<ListItemModel> = [];  
+  _selectedItem: ListItemModel | null = null;   
   documentClickEventListener: Function | null = null;
   documentKeyDownEventListener: Function | null = null;
-  
+  visibleOptions: Array<ListItemModel> = [];
+  visibleOptions$: Observable<Array<ListItemModel>> = new Observable;
+  displayValue: number | string | null = '';
+  focusedOptionIndex: number = -1;
+  lastOptionIndex: number = -1;
+  filterValue: string = '';
+  overlayVisible = false;
+    
+  private _dataList$: Observable<Array<ListItemModel>> = new Observable;
+
   ngOnDestroy(): void {
     this.unsubscribeDocumentClickEventListener();
     this.unsubscribeDocumentKeyDownEventListener();
@@ -202,6 +246,19 @@ export class DropDownComponent extends DropDownBase implements OnDestroy {
     return ObjectUtil.accessPropertyValue(option, this.keyPropertyName);   
   }
 
+  private setSelectedItem(option?: ListItemModel): void {
+    if (option) {
+      this.selectedItem = option;      
+      return;
+    }
+
+    if (this.value && this.listItems && this.listItems.length) {      
+      this.selectedItem = this.listItems.find((x) => {
+        return x[this.keyPropertyName as keyof typeof x] === this.value;
+      }) || null;    
+    }
+  }
+
   private updateDisplayValue(option?: ListItemModel): void {   
     this.displayValue = this.getOptionDisplayValue(option || this.selectedItem);
   }
@@ -213,12 +270,10 @@ export class DropDownComponent extends DropDownBase implements OnDestroy {
       } else {
         this.hide();
       }
-    }
-
-    if (this.overlayVisible && this.focusedOptionIndex !== -1) {   
+    } else if (this.overlayVisible && this.focusedOptionIndex !== -1) {   
       const option = this.visibleOptions[this.focusedOptionIndex];
       this.onOptionSelect(event, option, this.focusedOptionIndex);    
-    }
+    }    
         
     event.preventDefault();
   }

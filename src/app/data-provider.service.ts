@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { ListItemModel } from './drop-down/dropdown.interface';
+import { ListItemModel } from './ui/model/ui.interface';
 import { Observable, of } from 'rxjs';
 import { AcademicFieldMockData, jobMockData } from './mock-data';
 

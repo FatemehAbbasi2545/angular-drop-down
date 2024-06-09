@@ -1,4 +1,4 @@
-import { ListItemModel } from "./drop-down/dropdown.interface";
+import { ListItemModel } from "./ui/model/ui.interface";
 
 export const jobMockData: ListItemModel[] = [
   { Key: 1, Value: "Administrative Assistant" },
