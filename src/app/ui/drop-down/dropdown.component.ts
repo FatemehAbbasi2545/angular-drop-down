@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild, forwardRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Observable, of } from 'rxjs';
 
-import { UiComponent } from './../base/ui.component';
-import { DropdownOutputModel, ListItemModel } from './../model/ui.interface';
-import { ObjectUtil } from './../utils/object.util';
-import { DomUtil } from './../utils/dom.util';
+import { DomUtil } from './../../utils/dom.util';
+import { SelectorComponent } from './../abastraction/selector.component';
+import { SelectorOutputData, ListItem } from './../abastraction/selector.interface';
 
 @Component({
   selector: 'dropdown',
@@ -23,71 +22,32 @@ import { DomUtil } from './../utils/dom.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush  
 })
-export class DropDownComponent extends UiComponent implements OnDestroy {
-  @Input() keyPropertyName: string = 'Key';
-  @Input() displayPropertyName: string = 'Value';
-  
-  @Input() get dataList(): Observable<Array<ListItemModel>> {
-    return this._dataList$;
-  }
-  
-  set dataList(value: Observable<Array<ListItemModel>>) {
-    this._dataList$ = value;
-    value.subscribe((items: Array<ListItemModel>) => {
-      this.listItems = items;
-      this.visibleOptions = items;
-      if (items.length > 0) {
-        this.lastOptionIndex = items.length - 1;
-      }      
-      this.visibleOptions$ = of(items);
-      if (this.value) {
-        this.setSelectedItem();
-      }
-    }) 
-  }
-      
-  @Output() onModelChange: EventEmitter<DropdownOutputModel | null> = new EventEmitter();   
-  
+export class DropDownComponent extends SelectorComponent {
   @ViewChild('input') inputElementRef!: ElementRef;
   @ViewChild('searchText') searchTextElementRef!: ElementRef; 
   @ViewChild('listItems') listItemsElementRef!: ElementRef;
 
-  get selectedItem() {
-    return this._selectedItem;
-  }
-  
-  set selectedItem(value: ListItemModel | null) {
-    this._selectedItem = value;
-  }
-  
-  listItems: Array<ListItemModel> = [];  
-  _selectedItem: ListItemModel | null = null;   
-  documentClickEventListener: Function | null = null;
-  documentKeyDownEventListener: Function | null = null;
-  visibleOptions: Array<ListItemModel> = [];
-  visibleOptions$: Observable<Array<ListItemModel>> = new Observable;
-  displayValue: number | string | null = '';
+  visibleOptions: Array<ListItem> = [];
+  visibleOptions$: Observable<Array<ListItem>> = new Observable;  
   focusedOptionIndex: number = -1;
   lastOptionIndex: number = -1;
   filterValue: string = '';
-  overlayVisible = false;
-    
-  private _dataList$: Observable<Array<ListItemModel>> = new Observable;
+  overlayVisible = false;  
 
-  ngOnDestroy(): void {
-    this.unsubscribeDocumentClickEventListener();
-    this.unsubscribeDocumentKeyDownEventListener();
-  }
-
-  override ngAfterWriteValue(): void {
+  override onDataListChange(): void {
+    this.visibleOptions = this.listItems;
+    if (this.listItems.length > 0) {
+      this.lastOptionIndex = this.listItems.length - 1;
+    }      
+    this.visibleOptions$ = of(this.listItems);
     if (this.value) {
       this.setSelectedItem();
-      this.updateDisplayValue();
     }
-  }   
+  }
 
-  getOptionDisplayValue(option: ListItemModel | null): number | string | null {   
-    return ObjectUtil.accessPropertyValue(option, this.displayPropertyName);    
+  override onEscapeKey(event?: KeyboardEvent) {
+    this.overlayVisible && this.hide();
+    event && event.preventDefault();
   }
 
   onTriggerClick(event: MouseEvent): void {
@@ -101,7 +61,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     event.stopPropagation();
   }
   
-  onOptionSelect(event: Event, option: ListItemModel, index: number): void {
+  onOptionSelect(event: Event, option: ListItem, index: number): void {
     if (!this.isSelected(option)) {
       this.setSelectedItem(option);
       const value = this.getOptionValue(option);
@@ -110,7 +70,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
         this.updateDisplayValue(option);
         this.focusedOptionIndex = index;
         this.onModelChange.emit(
-          { key: this.value, title: this.displayValue, item: this.selectedItem } as DropdownOutputModel
+          { Key: this.value, Title: this.displayValue, Item: this.selectedItem } as SelectorOutputData
         );
       }                
     }
@@ -230,39 +190,6 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     this.onTouche();
   }
 
-  private isSelected(option: ListItemModel): boolean {
-    return this.isValidOption(option) && this.isOptionValueEqualsModelValue(option);
-  }
-
-  private isValidOption(option: ListItemModel): boolean {
-    return option !== undefined && option !== null;
-  }
-
-  private isOptionValueEqualsModelValue(option: ListItemModel):boolean {
-    return ObjectUtil.equals(this.selectedItem, option, this.keyPropertyName);
-  }
-
-  private getOptionValue(option: ListItemModel): number | string | null {    
-    return ObjectUtil.accessPropertyValue(option, this.keyPropertyName);   
-  }
-
-  private setSelectedItem(option?: ListItemModel): void {
-    if (option) {
-      this.selectedItem = option;      
-      return;
-    }
-
-    if (this.value && this.listItems && this.listItems.length) {      
-      this.selectedItem = this.listItems.find((x) => {
-        return x[this.keyPropertyName as keyof typeof x] === this.value;
-      }) || null;    
-    }
-  }
-
-  private updateDisplayValue(option?: ListItemModel): void {   
-    this.displayValue = this.getOptionDisplayValue(option || this.selectedItem);
-  }
-
   private onEnterKey(event: KeyboardEvent, pressedInInput: boolean): void {    
     if (pressedInInput) {
       if (!this.overlayVisible) {
@@ -304,7 +231,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     event.stopPropagation();
   }
 
-  onHomeKey(event: KeyboardEvent, pressedInInput = false) {
+  private onHomeKey(event: KeyboardEvent, pressedInInput = false) {
     if (this.overlayVisible && !pressedInInput) {
       this.changeFocusedOptionIndex(0);
     }
@@ -312,7 +239,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     event.stopPropagation();
   } 
   
-  onEndKey(event: KeyboardEvent, pressedInInput = false) {
+  private onEndKey(event: KeyboardEvent, pressedInInput = false) {
     if (this.overlayVisible && !pressedInInput) {
       this.changeFocusedOptionIndex(this.lastOptionIndex);
     }
@@ -320,7 +247,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     event.stopPropagation();
   } 
 
-  onPageDownKey(event: KeyboardEvent, pressedInInput = false) {
+  private onPageDownKey(event: KeyboardEvent, pressedInInput = false) {
     if (this.overlayVisible && !pressedInInput) {
       let optionIndex = this.focusedOptionIndex;
       if (optionIndex === -1) {
@@ -344,7 +271,7 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     event.stopPropagation();
   }
 
-  onPageUpKey(event: KeyboardEvent, pressedInInput = false) {
+  private onPageUpKey(event: KeyboardEvent, pressedInInput = false) {
     if (this.overlayVisible && !pressedInInput) {
       let optionIndex = this.focusedOptionIndex;
       if (optionIndex > 0) {
@@ -359,25 +286,13 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
     }
     event.preventDefault();
     event.stopPropagation();
-  }
-
-  private onEscapeKey(event: KeyboardEvent) {
-    this.overlayVisible && this.hide();
-    event.preventDefault();
-  }
+  }  
 
   private onDeleteKey(event: KeyboardEvent) {
     this.clear();
     this.overlayVisible && this.hide();  
     event.preventDefault();
     event.stopPropagation();         
-  }
-
-  private clear() {
-    this.updateModel(null); 
-    this.displayValue = null;
-    this.selectedItem = null;
-    this.onModelChange.emit(null);
   }
 
   private findNextOptionIndex(index: number) {
@@ -404,40 +319,4 @@ export class DropDownComponent extends UiComponent implements OnDestroy {
       }
     }
   }    
-
-  subscribeDocumentClickEventListener() {
-    if (this.documentClickEventListener) return;
-    this.documentClickEventListener = this.renderer.listen(
-      'document',
-      'click',
-      (event: MouseEvent) => {
-        this.overlayVisible && this.hide();
-      }
-    );
-  }
-
-  unsubscribeDocumentClickEventListener() {
-    if (!this.documentClickEventListener) return;
-
-    this.documentClickEventListener();
-    this.documentClickEventListener = null;
-  }
-
-  subscribeDocumentKeyDownEventListener() {
-    if (this.documentKeyDownEventListener) return;
-    this.documentKeyDownEventListener = this.renderer.listen(
-      'document',
-      'keydown',
-      (event: KeyboardEvent) => {
-        event.code === 'Escape' && this.overlayVisible && this.hide();
-      }
-    );
-  }
-
-  unsubscribeDocumentKeyDownEventListener() {
-    if (!this.documentKeyDownEventListener) return;
-
-    this.documentKeyDownEventListener();
-    this.documentKeyDownEventListener = null;
-  }
 }

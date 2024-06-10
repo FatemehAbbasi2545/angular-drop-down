@@ -1,6 +1,6 @@
-import { ListItemModel } from "./ui/model/ui.interface";
+import { ListItem } from "./ui/abastraction/selector.interface";
 
-export const jobMockData: ListItemModel[] = [
+export const jobMockData: ListItem[] = [
   { Key: 1, Value: "Administrative Assistant" },
   { Key: 2, Value: "Marketing Manager" },
   { Key: 3, Value: "Customer Service Representative" },
@@ -19,7 +19,7 @@ export const jobMockData: ListItemModel[] = [
   { Key: 16, Value: "Order Selector" }
 ];
 
-export const AcademicFieldMockData: ListItemModel[] = [
+export const AcademicFieldMockData: ListItem[] = [
   { Key: 1001, Value: 'Psychology' },
   { Key: 1002, Value: 'Biology' },
   { Key: 1003, Value: 'Physics' },
