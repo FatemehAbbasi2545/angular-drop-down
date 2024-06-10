@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { DataProviderService } from './data-provider.service';
 import { DropDownComponent } from './ui/drop-down/dropdown.component';
-import { SelectorOutputData } from './ui/abastraction/selector.interface';
+import { SelectorOutputData } from './ui/abstraction/selector.interface';
 
 @Component({
   selector: 'app-root',

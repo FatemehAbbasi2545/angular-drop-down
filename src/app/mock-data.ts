@@ -1,4 +1,4 @@
-import { ListItem } from "./ui/abastraction/selector.interface";
+import { ListItem } from "./ui/abstraction/selector.interface";
 
 export const jobMockData: ListItem[] = [
   { Key: 1, Value: "Administrative Assistant" },
