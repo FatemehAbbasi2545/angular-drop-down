@@ -3,8 +3,8 @@ import { ChangeDetectorRef, Directive, Input, Renderer2 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 
 @Directive({})
-export class UiComponent implements ControlValueAccessor {
-  @Input() disabled: boolean = false; 
+export abstract class UiComponent implements ControlValueAccessor {
+  @Input() disabled: boolean = false;
 
   get value(): number | string | null {
     return this._value;
@@ -48,6 +48,7 @@ export class UiComponent implements ControlValueAccessor {
     this.onTouche();
   }
 
-  ngAfterWriteValue(): void {}
+  //virtual method
+  protected ngAfterWriteValue(): void {}
 }
 

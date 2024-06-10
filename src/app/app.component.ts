@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { DataProviderService } from './data-provider.service';
 import { DropDownComponent } from './ui/drop-down/dropdown.component';
-import { DropdownOutputModel } from './ui/model/ui.interface';
+import { SelectorOutputData } from './ui/abastraction/selector.interface';
 
 @Component({
   selector: 'app-root',
@@ -25,15 +25,15 @@ export class AppComponent {
 
   constructor(public dataProvider: DataProviderService) {}
 
-  onJobChange(newValue: DropdownOutputModel | null): void {
+  onJobChange(newValue: SelectorOutputData | null): void {
     if (newValue) {
-      this.jobTitle = newValue.title as string;      
+      this.jobTitle = newValue.Title as string;      
     }    
   }
   
-  onAcademicFieldChange(newValue: DropdownOutputModel | null): void {
+  onAcademicFieldChange(newValue: SelectorOutputData | null): void {
     if (newValue) {      
-      this.academicFieldTitle = newValue.title as string;      
+      this.academicFieldTitle = newValue.Title as string;      
     }    
   }
 }
