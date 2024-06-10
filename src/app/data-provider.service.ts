@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { ListItem } from './ui/abastraction/selector.interface';
+import { ListItem } from './ui/abstraction/selector.interface';
 import { AcademicFieldMockData, jobMockData } from './mock-data';
 
 @Injectable({

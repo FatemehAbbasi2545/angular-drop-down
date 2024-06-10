@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Observable, of } from 'rxjs';
 
 import { DomUtil } from './../../utils/dom.util';
-import { SelectorComponent } from './../abastraction/selector.component';
-import { SelectorOutputData, ListItem } from './../abastraction/selector.interface';
+import { SelectorComponent } from './../abstraction/selector.component';
+import { SelectorOutputData, ListItem } from './../abstraction/selector.interface';
 
 @Component({
   selector: 'dropdown',
